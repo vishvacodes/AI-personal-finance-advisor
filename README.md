@@ -1,5 +1,8 @@
 # Noise-Robust, Leakage-Safe Transaction Categorization for Indian Banking
 
+**Live demo:** https://ai-personal-finance-advisor-lazazyvemk4h9ghxwawblo.streamlit.app/
+
+**Source code:** https://github.com/vishvacodes/AI-Personal-Finance-Advisor
 An evidence-based, privacy-first, and grounded **AI Personal Finance Advisor** built with Python, Scikit-Learn, LightGBM, XGBoost, pandas, and Streamlit.
 
 > **Core Thesis**:
