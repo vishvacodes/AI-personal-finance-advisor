@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# Environment variables & secrets
+.env
+.streamlit/
+.streamlit/secrets.toml
+
+# Large dataset files & trained artifacts (optional to track or ignore based on setup)
+data/raw/*.parquet
+data/processed/
+models/*.joblib
+*.pt
+*.bin
+*.safetensors
+results/distilbert/checkpoint-*/
+
+# Logs & temp
+*.log
+*.db
+data/*.db
+scratch/
+!models/final_model.joblib
+!models/variant_b_candidate.joblib
+
+
+.env
+env/
+
+kaggle_export/
+kaggle_export.zip
+
+data/own_test_indian.csv
