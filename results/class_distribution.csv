@@ -1,0 +1,52 @@
+dataset,category,count,pct,total_n
+train,Charity & Donations,6980,9.99,69885
+train,Entertainment & Recreation,6893,9.86,69885
+train,Financial Services,6990,10.0,69885
+train,Food & Dining,6988,10.0,69885
+train,Government & Legal,7032,10.06,69885
+train,Healthcare & Medical,7001,10.02,69885
+train,Income,6942,9.93,69885
+train,Shopping & Retail,7034,10.07,69885
+train,Transportation,6990,10.0,69885
+train,Utilities & Services,7035,10.07,69885
+clean_test,Charity & Donations,2068,10.32,20040
+clean_test,Entertainment & Recreation,1969,9.83,20040
+clean_test,Financial Services,2012,10.04,20040
+clean_test,Food & Dining,1996,9.96,20040
+clean_test,Government & Legal,2009,10.02,20040
+clean_test,Healthcare & Medical,2001,9.99,20040
+clean_test,Income,1983,9.9,20040
+clean_test,Shopping & Retail,2009,10.02,20040
+clean_test,Transportation,1996,9.96,20040
+clean_test,Utilities & Services,1997,9.97,20040
+noisy_v2,Charity & Donations,2068,10.32,20040
+noisy_v2,Entertainment & Recreation,1969,9.83,20040
+noisy_v2,Financial Services,2012,10.04,20040
+noisy_v2,Food & Dining,1996,9.96,20040
+noisy_v2,Government & Legal,2009,10.02,20040
+noisy_v2,Healthcare & Medical,2001,9.99,20040
+noisy_v2,Income,1983,9.9,20040
+noisy_v2,Shopping & Retail,2009,10.02,20040
+noisy_v2,Transportation,1996,9.96,20040
+noisy_v2,Utilities & Services,1997,9.97,20040
+indian_105,Charity & Donations,5,4.76,105
+indian_105,Entertainment & Recreation,10,9.52,105
+indian_105,Financial Services,5,4.76,105
+indian_105,Food & Dining,15,14.29,105
+indian_105,Government & Legal,5,4.76,105
+indian_105,Healthcare & Medical,10,9.52,105
+indian_105,Income,10,9.52,105
+indian_105,Rent,5,4.76,105
+indian_105,Shopping & Retail,15,14.29,105
+indian_105,Transportation,15,14.29,105
+indian_105,Utilities & Services,10,9.52,105
+indian_seed,Charity & Donations,196,6.4,3062
+indian_seed,Entertainment & Recreation,266,8.69,3062
+indian_seed,Financial Services,322,10.52,3062
+indian_seed,Food & Dining,383,12.51,3062
+indian_seed,Government & Legal,238,7.77,3062
+indian_seed,Healthcare & Medical,280,9.14,3062
+indian_seed,Income,252,8.23,3062
+indian_seed,Shopping & Retail,403,13.16,3062
+indian_seed,Transportation,345,11.27,3062
+indian_seed,Utilities & Services,377,12.31,3062

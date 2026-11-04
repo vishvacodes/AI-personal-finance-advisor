@@ -1,0 +1,313 @@
+model,dataset,category,precision,recall,f1,support
+Candidate_SVM,clean,Charity & Donations,1.0,0.999,0.9995,2068
+Candidate_SVM,clean,Entertainment & Recreation,1.0,1.0,1.0,1969
+Candidate_SVM,clean,Financial Services,0.997,0.9975,0.9973,2012
+Candidate_SVM,clean,Food & Dining,0.999,0.999,0.999,1996
+Candidate_SVM,clean,Government & Legal,0.998,0.998,0.998,2009
+Candidate_SVM,clean,Healthcare & Medical,0.9872,0.9245,0.9548,2001
+Candidate_SVM,clean,Income,0.998,0.9985,0.9982,1983
+Candidate_SVM,clean,Shopping & Retail,0.9297,0.9876,0.9578,2009
+Candidate_SVM,clean,Transportation,0.9995,0.9975,0.9985,1996
+Candidate_SVM,clean,Utilities & Services,0.9955,0.9985,0.997,1997
+Candidate_SVM,indian_105,Charity & Donations,0.625,1.0,0.7692,5
+Candidate_SVM,indian_105,Entertainment & Recreation,1.0,1.0,1.0,10
+Candidate_SVM,indian_105,Financial Services,1.0,1.0,1.0,5
+Candidate_SVM,indian_105,Food & Dining,1.0,0.9333,0.9655,15
+Candidate_SVM,indian_105,Government & Legal,0.5556,1.0,0.7143,5
+Candidate_SVM,indian_105,Healthcare & Medical,0.8889,0.8,0.8421,10
+Candidate_SVM,indian_105,Income,0.75,0.9,0.8182,10
+Candidate_SVM,indian_105,Rent,0.0,0.0,0.0,5
+Candidate_SVM,indian_105,Shopping & Retail,1.0,0.8667,0.9286,15
+Candidate_SVM,indian_105,Transportation,0.9286,0.8667,0.8966,15
+Candidate_SVM,indian_105,Utilities & Services,0.9091,1.0,0.9524,10
+Candidate_SVM,indian_96,Charity & Donations,0.625,1.0,0.7692,5
+Candidate_SVM,indian_96,Entertainment & Recreation,1.0,1.0,1.0,10
+Candidate_SVM,indian_96,Financial Services,1.0,1.0,1.0,5
+Candidate_SVM,indian_96,Food & Dining,1.0,0.9091,0.9524,11
+Candidate_SVM,indian_96,Government & Legal,0.5556,1.0,0.7143,5
+Candidate_SVM,indian_96,Healthcare & Medical,0.8889,0.8,0.8421,10
+Candidate_SVM,indian_96,Income,0.75,0.9,0.8182,10
+Candidate_SVM,indian_96,Rent,0.0,0.0,0.0,5
+Candidate_SVM,indian_96,Shopping & Retail,1.0,0.8333,0.9091,12
+Candidate_SVM,indian_96,Transportation,0.9167,0.8462,0.88,13
+Candidate_SVM,indian_96,Utilities & Services,0.9091,1.0,0.9524,10
+Candidate_SVM,noisy_v2,Charity & Donations,0.9422,0.8119,0.8722,2068
+Candidate_SVM,noisy_v2,Entertainment & Recreation,0.9416,0.7131,0.8116,1969
+Candidate_SVM,noisy_v2,Financial Services,0.6183,0.831,0.7091,2012
+Candidate_SVM,noisy_v2,Food & Dining,0.7219,0.8712,0.7896,1996
+Candidate_SVM,noisy_v2,Government & Legal,0.7131,0.6605,0.6858,2009
+Candidate_SVM,noisy_v2,Healthcare & Medical,0.7741,0.7331,0.7531,2001
+Candidate_SVM,noisy_v2,Income,0.9098,0.7272,0.8083,1983
+Candidate_SVM,noisy_v2,Shopping & Retail,0.7421,0.7218,0.7318,2009
+Candidate_SVM,noisy_v2,Transportation,0.7558,0.766,0.7609,1996
+Candidate_SVM,noisy_v2,Utilities & Services,0.6845,0.8007,0.7381,1997
+Candidate_SVM,typo,Charity & Donations,0.9407,0.9264,0.9335,394
+Candidate_SVM,typo,Entertainment & Recreation,0.9037,0.7838,0.8395,407
+Candidate_SVM,typo,Financial Services,0.8064,0.8844,0.8436,372
+Candidate_SVM,typo,Food & Dining,0.8688,0.9665,0.9151,418
+Candidate_SVM,typo,Government & Legal,0.8416,0.8161,0.8286,397
+Candidate_SVM,typo,Healthcare & Medical,0.8943,0.8482,0.8707,369
+Candidate_SVM,typo,Income,0.9709,0.9502,0.9605,422
+Candidate_SVM,typo,Shopping & Retail,0.8227,0.8329,0.8278,401
+Candidate_SVM,typo,Transportation,0.8627,0.8911,0.8767,395
+Candidate_SVM,typo,Utilities & Services,0.8998,0.8976,0.8987,410
+DistilBERT,clean,Charity & Donations,1.0,1.0,1.0,2068
+DistilBERT,clean,Entertainment & Recreation,1.0,1.0,1.0,1969
+DistilBERT,clean,Financial Services,1.0,1.0,1.0,2012
+DistilBERT,clean,Food & Dining,0.999,1.0,0.9995,1996
+DistilBERT,clean,Government & Legal,0.9995,0.998,0.9988,2009
+DistilBERT,clean,Healthcare & Medical,1.0,0.918,0.9573,2001
+DistilBERT,clean,Income,0.998,1.0,0.999,1983
+DistilBERT,clean,Shopping & Retail,0.9244,0.9985,0.96,2009
+DistilBERT,clean,Transportation,1.0,0.9985,0.9992,1996
+DistilBERT,clean,Utilities & Services,0.9985,1.0,0.9992,1997
+DistilBERT,indian_105,Charity & Donations,0.7143,1.0,0.8333,5
+DistilBERT,indian_105,Entertainment & Recreation,0.9091,1.0,0.9524,10
+DistilBERT,indian_105,Financial Services,1.0,1.0,1.0,5
+DistilBERT,indian_105,Food & Dining,1.0,0.9333,0.9655,15
+DistilBERT,indian_105,Government & Legal,1.0,1.0,1.0,5
+DistilBERT,indian_105,Healthcare & Medical,1.0,1.0,1.0,10
+DistilBERT,indian_105,Income,0.7143,1.0,0.8333,10
+DistilBERT,indian_105,Rent,0.0,0.0,0.0,5
+DistilBERT,indian_105,Shopping & Retail,1.0,0.9333,0.9655,15
+DistilBERT,indian_105,Transportation,1.0,1.0,1.0,15
+DistilBERT,indian_105,Utilities & Services,1.0,1.0,1.0,10
+DistilBERT,indian_96,Charity & Donations,0.7143,1.0,0.8333,5
+DistilBERT,indian_96,Entertainment & Recreation,0.9091,1.0,0.9524,10
+DistilBERT,indian_96,Financial Services,1.0,1.0,1.0,5
+DistilBERT,indian_96,Food & Dining,1.0,0.9091,0.9524,11
+DistilBERT,indian_96,Government & Legal,1.0,1.0,1.0,5
+DistilBERT,indian_96,Healthcare & Medical,1.0,1.0,1.0,10
+DistilBERT,indian_96,Income,0.7143,1.0,0.8333,10
+DistilBERT,indian_96,Rent,0.0,0.0,0.0,5
+DistilBERT,indian_96,Shopping & Retail,1.0,0.9167,0.9565,12
+DistilBERT,indian_96,Transportation,1.0,1.0,1.0,13
+DistilBERT,indian_96,Utilities & Services,1.0,1.0,1.0,10
+DistilBERT,noisy_v2,Charity & Donations,0.855,0.676,0.7551,2068
+DistilBERT,noisy_v2,Entertainment & Recreation,0.9262,0.6059,0.7326,1969
+DistilBERT,noisy_v2,Financial Services,0.5971,0.8007,0.6841,2012
+DistilBERT,noisy_v2,Food & Dining,0.7898,0.6779,0.7296,1996
+DistilBERT,noisy_v2,Government & Legal,0.493,0.6506,0.5609,2009
+DistilBERT,noisy_v2,Healthcare & Medical,0.8664,0.7321,0.7936,2001
+DistilBERT,noisy_v2,Income,0.8558,0.6374,0.7306,1983
+DistilBERT,noisy_v2,Shopping & Retail,0.6352,0.7098,0.6704,2009
+DistilBERT,noisy_v2,Transportation,0.6454,0.7039,0.6734,1996
+DistilBERT,noisy_v2,Utilities & Services,0.5704,0.7041,0.6302,1997
+DistilBERT,typo,Charity & Donations,0.8468,0.8274,0.837,394
+DistilBERT,typo,Entertainment & Recreation,0.8758,0.7101,0.7843,407
+DistilBERT,typo,Financial Services,0.8312,0.8871,0.8583,372
+DistilBERT,typo,Food & Dining,0.7021,0.7895,0.7432,418
+DistilBERT,typo,Government & Legal,0.6791,0.6877,0.6834,397
+DistilBERT,typo,Healthcare & Medical,0.8601,0.7995,0.8287,369
+DistilBERT,typo,Income,0.8249,0.7701,0.7966,422
+DistilBERT,typo,Shopping & Retail,0.6989,0.793,0.743,401
+DistilBERT,typo,Transportation,0.7342,0.7342,0.7342,395
+DistilBERT,typo,Utilities & Services,0.756,0.7634,0.7597,410
+Legacy_SVM,clean,Charity & Donations,1.0,1.0,1.0,2068
+Legacy_SVM,clean,Entertainment & Recreation,1.0,1.0,1.0,1969
+Legacy_SVM,clean,Financial Services,1.0,1.0,1.0,2012
+Legacy_SVM,clean,Food & Dining,0.9995,0.9995,0.9995,1996
+Legacy_SVM,clean,Government & Legal,0.999,0.999,0.999,2009
+Legacy_SVM,clean,Healthcare & Medical,0.9431,0.9695,0.9561,2001
+Legacy_SVM,clean,Income,0.999,0.9995,0.9992,1983
+Legacy_SVM,clean,Shopping & Retail,0.9682,0.9408,0.9543,2009
+Legacy_SVM,clean,Transportation,1.0,0.9985,0.9992,1996
+Legacy_SVM,clean,Utilities & Services,0.9985,1.0,0.9992,1997
+Legacy_SVM,indian_105,Charity & Donations,0.7143,1.0,0.8333,5
+Legacy_SVM,indian_105,Entertainment & Recreation,1.0,0.6,0.75,10
+Legacy_SVM,indian_105,Financial Services,0.6667,0.8,0.7273,5
+Legacy_SVM,indian_105,Food & Dining,1.0,0.2,0.3333,15
+Legacy_SVM,indian_105,Government & Legal,0.625,1.0,0.7692,5
+Legacy_SVM,indian_105,Healthcare & Medical,1.0,0.5,0.6667,10
+Legacy_SVM,indian_105,Income,0.8333,1.0,0.9091,10
+Legacy_SVM,indian_105,Rent,0.0,0.0,0.0,5
+Legacy_SVM,indian_105,Shopping & Retail,0.2553,0.8,0.3871,15
+Legacy_SVM,indian_105,Transportation,1.0,0.4,0.5714,15
+Legacy_SVM,indian_105,Utilities & Services,0.6,0.3,0.4,10
+Legacy_SVM,indian_96,Charity & Donations,0.7143,1.0,0.8333,5
+Legacy_SVM,indian_96,Entertainment & Recreation,1.0,0.6,0.75,10
+Legacy_SVM,indian_96,Financial Services,0.6667,0.8,0.7273,5
+Legacy_SVM,indian_96,Food & Dining,1.0,0.1818,0.3077,11
+Legacy_SVM,indian_96,Government & Legal,0.625,1.0,0.7692,5
+Legacy_SVM,indian_96,Healthcare & Medical,1.0,0.5,0.6667,10
+Legacy_SVM,indian_96,Income,0.9091,1.0,0.9524,10
+Legacy_SVM,indian_96,Rent,0.0,0.0,0.0,5
+Legacy_SVM,indian_96,Shopping & Retail,0.2619,0.9167,0.4074,12
+Legacy_SVM,indian_96,Transportation,1.0,0.3846,0.5556,13
+Legacy_SVM,indian_96,Utilities & Services,0.75,0.3,0.4286,10
+Legacy_SVM,noisy_v2,Charity & Donations,1.0,0.705,0.827,2068
+Legacy_SVM,noisy_v2,Entertainment & Recreation,1.0,0.581,0.735,1969
+Legacy_SVM,noisy_v2,Financial Services,0.9579,0.577,0.7202,2012
+Legacy_SVM,noisy_v2,Food & Dining,0.919,0.6533,0.7637,1996
+Legacy_SVM,noisy_v2,Government & Legal,0.9538,0.5445,0.6933,2009
+Legacy_SVM,noisy_v2,Healthcare & Medical,0.7944,0.5947,0.6802,2001
+Legacy_SVM,noisy_v2,Income,0.9974,0.5809,0.7342,1983
+Legacy_SVM,noisy_v2,Shopping & Retail,0.2138,0.892,0.3449,2009
+Legacy_SVM,noisy_v2,Transportation,0.936,0.6007,0.7318,1996
+Legacy_SVM,noisy_v2,Utilities & Services,0.974,0.656,0.784,1997
+Legacy_SVM,typo,Charity & Donations,1.0,0.7614,0.8646,394
+Legacy_SVM,typo,Entertainment & Recreation,1.0,0.5774,0.7321,407
+Legacy_SVM,typo,Financial Services,0.9325,0.5941,0.7258,372
+Legacy_SVM,typo,Food & Dining,0.9219,0.7057,0.7995,418
+Legacy_SVM,typo,Government & Legal,0.9598,0.5416,0.6924,397
+Legacy_SVM,typo,Healthcare & Medical,0.7472,0.729,0.738,369
+Legacy_SVM,typo,Income,0.9963,0.6422,0.781,422
+Legacy_SVM,typo,Shopping & Retail,0.2356,0.8753,0.3712,401
+Legacy_SVM,typo,Transportation,0.9197,0.5797,0.7112,395
+Legacy_SVM,typo,Utilities & Services,0.9597,0.6976,0.8079,410
+LightGBM,clean,Charity & Donations,0.9961,0.9889,0.9925,2068
+LightGBM,clean,Entertainment & Recreation,0.9995,0.9904,0.9949,1969
+LightGBM,clean,Financial Services,0.9965,0.994,0.9953,2012
+LightGBM,clean,Food & Dining,0.9759,0.995,0.9854,1996
+LightGBM,clean,Government & Legal,0.99,0.9871,0.9885,2009
+LightGBM,clean,Healthcare & Medical,0.9747,0.9235,0.9484,2001
+LightGBM,clean,Income,0.9975,0.9909,0.9942,1983
+LightGBM,clean,Shopping & Retail,0.9107,0.9343,0.9224,2009
+LightGBM,clean,Transportation,0.9462,0.986,0.9657,1996
+LightGBM,clean,Utilities & Services,0.9884,0.982,0.9852,1997
+LightGBM,indian_105,Charity & Donations,0.7143,1.0,0.8333,5
+LightGBM,indian_105,Entertainment & Recreation,1.0,1.0,1.0,10
+LightGBM,indian_105,Financial Services,0.8,0.8,0.8,5
+LightGBM,indian_105,Food & Dining,0.8462,0.7333,0.7857,15
+LightGBM,indian_105,Government & Legal,0.4545,1.0,0.625,5
+LightGBM,indian_105,Healthcare & Medical,0.8182,0.9,0.8571,10
+LightGBM,indian_105,Income,0.75,0.9,0.8182,10
+LightGBM,indian_105,Rent,0.0,0.0,0.0,5
+LightGBM,indian_105,Shopping & Retail,0.8667,0.8667,0.8667,15
+LightGBM,indian_105,Transportation,0.8,0.5333,0.64,15
+LightGBM,indian_105,Utilities & Services,0.7273,0.8,0.7619,10
+LightGBM,indian_96,Charity & Donations,0.7143,1.0,0.8333,5
+LightGBM,indian_96,Entertainment & Recreation,1.0,1.0,1.0,10
+LightGBM,indian_96,Financial Services,0.8,0.8,0.8,5
+LightGBM,indian_96,Food & Dining,0.8,0.7273,0.7619,11
+LightGBM,indian_96,Government & Legal,0.4545,1.0,0.625,5
+LightGBM,indian_96,Healthcare & Medical,0.8182,0.9,0.8571,10
+LightGBM,indian_96,Income,0.75,0.9,0.8182,10
+LightGBM,indian_96,Rent,0.0,0.0,0.0,5
+LightGBM,indian_96,Shopping & Retail,0.9091,0.8333,0.8696,12
+LightGBM,indian_96,Transportation,0.75,0.4615,0.5714,13
+LightGBM,indian_96,Utilities & Services,0.7273,0.8,0.7619,10
+LightGBM,noisy_v2,Charity & Donations,0.8998,0.5861,0.7098,2068
+LightGBM,noisy_v2,Entertainment & Recreation,0.861,0.5851,0.6967,1969
+LightGBM,noisy_v2,Financial Services,0.5549,0.5974,0.5754,2012
+LightGBM,noisy_v2,Food & Dining,0.6168,0.754,0.6785,1996
+LightGBM,noisy_v2,Government & Legal,0.5836,0.6327,0.6071,2009
+LightGBM,noisy_v2,Healthcare & Medical,0.6486,0.5037,0.5671,2001
+LightGBM,noisy_v2,Income,0.9367,0.6263,0.7507,1983
+LightGBM,noisy_v2,Shopping & Retail,0.5047,0.6461,0.5667,2009
+LightGBM,noisy_v2,Transportation,0.4953,0.742,0.5941,1996
+LightGBM,noisy_v2,Utilities & Services,0.6411,0.6835,0.6617,1997
+LightGBM,typo,Charity & Donations,0.9482,0.7893,0.8615,394
+LightGBM,typo,Entertainment & Recreation,0.9071,0.7199,0.8027,407
+LightGBM,typo,Financial Services,0.9486,0.7446,0.8343,372
+LightGBM,typo,Food & Dining,0.7636,0.8732,0.8147,418
+LightGBM,typo,Government & Legal,0.7414,0.7582,0.7497,397
+LightGBM,typo,Healthcare & Medical,0.8061,0.7209,0.7611,369
+LightGBM,typo,Income,0.9424,0.8531,0.8955,422
+LightGBM,typo,Shopping & Retail,0.5671,0.7905,0.6604,401
+LightGBM,typo,Transportation,0.6837,0.8481,0.7571,395
+LightGBM,typo,Utilities & Services,0.8438,0.8171,0.8302,410
+MiniLM_LogReg,clean,Charity & Donations,0.9893,0.9429,0.9656,2068
+MiniLM_LogReg,clean,Entertainment & Recreation,0.96,0.7435,0.838,1969
+MiniLM_LogReg,clean,Financial Services,0.9476,0.9533,0.9504,2012
+MiniLM_LogReg,clean,Food & Dining,0.9397,0.8747,0.9061,1996
+MiniLM_LogReg,clean,Government & Legal,0.921,0.9457,0.9332,2009
+MiniLM_LogReg,clean,Healthcare & Medical,0.9788,0.8991,0.9372,2001
+MiniLM_LogReg,clean,Income,0.963,0.9718,0.9674,1983
+MiniLM_LogReg,clean,Shopping & Retail,0.7072,0.8402,0.768,2009
+MiniLM_LogReg,clean,Transportation,0.7409,0.8236,0.7801,1996
+MiniLM_LogReg,clean,Utilities & Services,0.8974,0.968,0.9313,1997
+MiniLM_LogReg,indian_105,Charity & Donations,0.8333,1.0,0.9091,5
+MiniLM_LogReg,indian_105,Entertainment & Recreation,0.8182,0.9,0.8571,10
+MiniLM_LogReg,indian_105,Financial Services,0.6667,0.8,0.7273,5
+MiniLM_LogReg,indian_105,Food & Dining,0.9286,0.8667,0.8966,15
+MiniLM_LogReg,indian_105,Government & Legal,0.8333,1.0,0.9091,5
+MiniLM_LogReg,indian_105,Healthcare & Medical,1.0,0.9,0.9474,10
+MiniLM_LogReg,indian_105,Income,0.625,1.0,0.7692,10
+MiniLM_LogReg,indian_105,Rent,0.0,0.0,0.0,5
+MiniLM_LogReg,indian_105,Shopping & Retail,0.8571,0.8,0.8276,15
+MiniLM_LogReg,indian_105,Transportation,0.75,0.6,0.6667,15
+MiniLM_LogReg,indian_105,Utilities & Services,0.8182,0.9,0.8571,10
+MiniLM_LogReg,indian_96,Charity & Donations,0.8333,1.0,0.9091,5
+MiniLM_LogReg,indian_96,Entertainment & Recreation,0.8182,0.9,0.8571,10
+MiniLM_LogReg,indian_96,Financial Services,0.6667,0.8,0.7273,5
+MiniLM_LogReg,indian_96,Food & Dining,0.9,0.8182,0.8571,11
+MiniLM_LogReg,indian_96,Government & Legal,0.8333,1.0,0.9091,5
+MiniLM_LogReg,indian_96,Healthcare & Medical,1.0,0.9,0.9474,10
+MiniLM_LogReg,indian_96,Income,0.625,1.0,0.7692,10
+MiniLM_LogReg,indian_96,Rent,0.0,0.0,0.0,5
+MiniLM_LogReg,indian_96,Shopping & Retail,0.8182,0.75,0.7826,12
+MiniLM_LogReg,indian_96,Transportation,0.7,0.5385,0.6087,13
+MiniLM_LogReg,indian_96,Utilities & Services,0.8182,0.9,0.8571,10
+MiniLM_LogReg,noisy_v2,Charity & Donations,0.7725,0.5271,0.6266,2068
+MiniLM_LogReg,noisy_v2,Entertainment & Recreation,0.8158,0.3149,0.4544,1969
+MiniLM_LogReg,noisy_v2,Financial Services,0.4817,0.4786,0.4802,2012
+MiniLM_LogReg,noisy_v2,Food & Dining,0.4938,0.4825,0.4881,1996
+MiniLM_LogReg,noisy_v2,Government & Legal,0.5306,0.4659,0.4962,2009
+MiniLM_LogReg,noisy_v2,Healthcare & Medical,0.7337,0.5052,0.5984,2001
+MiniLM_LogReg,noisy_v2,Income,0.7665,0.4453,0.5633,1983
+MiniLM_LogReg,noisy_v2,Shopping & Retail,0.3314,0.3728,0.3509,2009
+MiniLM_LogReg,noisy_v2,Transportation,0.2799,0.5797,0.3775,1996
+MiniLM_LogReg,noisy_v2,Utilities & Services,0.3744,0.6059,0.4628,1997
+MiniLM_LogReg,typo,Charity & Donations,0.8767,0.6497,0.7464,394
+MiniLM_LogReg,typo,Entertainment & Recreation,0.7212,0.3686,0.4878,407
+MiniLM_LogReg,typo,Financial Services,0.5543,0.5349,0.5445,372
+MiniLM_LogReg,typo,Food & Dining,0.5474,0.7177,0.6211,418
+MiniLM_LogReg,typo,Government & Legal,0.6654,0.4559,0.5411,397
+MiniLM_LogReg,typo,Healthcare & Medical,0.7329,0.6098,0.6657,369
+MiniLM_LogReg,typo,Income,0.8403,0.5237,0.6453,422
+MiniLM_LogReg,typo,Shopping & Retail,0.3569,0.5411,0.4301,401
+MiniLM_LogReg,typo,Transportation,0.3604,0.6633,0.467,395
+MiniLM_LogReg,typo,Utilities & Services,0.6434,0.6293,0.6363,410
+XGBoost,clean,Charity & Donations,0.8066,0.7302,0.7665,2068
+XGBoost,clean,Entertainment & Recreation,0.8313,0.6633,0.7379,1969
+XGBoost,clean,Financial Services,0.8596,0.7639,0.8089,2012
+XGBoost,clean,Food & Dining,0.6505,0.7936,0.715,1996
+XGBoost,clean,Government & Legal,0.6713,0.7636,0.7145,2009
+XGBoost,clean,Healthcare & Medical,0.9111,0.6147,0.7341,2001
+XGBoost,clean,Income,0.9957,0.8265,0.9033,1983
+XGBoost,clean,Shopping & Retail,0.5263,0.5187,0.5224,2009
+XGBoost,clean,Transportation,0.5053,0.7941,0.6176,1996
+XGBoost,clean,Utilities & Services,0.8021,0.7937,0.7979,1997
+XGBoost,indian_105,Charity & Donations,0.5,1.0,0.6667,5
+XGBoost,indian_105,Entertainment & Recreation,1.0,0.8,0.8889,10
+XGBoost,indian_105,Financial Services,0.625,1.0,0.7692,5
+XGBoost,indian_105,Food & Dining,0.75,0.6,0.6667,15
+XGBoost,indian_105,Government & Legal,0.5714,0.8,0.6667,5
+XGBoost,indian_105,Healthcare & Medical,0.7273,0.8,0.7619,10
+XGBoost,indian_105,Income,0.6429,0.9,0.75,10
+XGBoost,indian_105,Rent,0.0,0.0,0.0,5
+XGBoost,indian_105,Shopping & Retail,0.7333,0.7333,0.7333,15
+XGBoost,indian_105,Transportation,0.6667,0.5333,0.5926,15
+XGBoost,indian_105,Utilities & Services,0.875,0.7,0.7778,10
+XGBoost,indian_96,Charity & Donations,0.5556,1.0,0.7143,5
+XGBoost,indian_96,Entertainment & Recreation,1.0,0.8,0.8889,10
+XGBoost,indian_96,Financial Services,0.625,1.0,0.7692,5
+XGBoost,indian_96,Food & Dining,0.6667,0.5455,0.6,11
+XGBoost,indian_96,Government & Legal,0.5714,0.8,0.6667,5
+XGBoost,indian_96,Healthcare & Medical,0.7273,0.8,0.7619,10
+XGBoost,indian_96,Income,0.6429,0.9,0.75,10
+XGBoost,indian_96,Rent,0.0,0.0,0.0,5
+XGBoost,indian_96,Shopping & Retail,0.6667,0.6667,0.6667,12
+XGBoost,indian_96,Transportation,0.6,0.4615,0.5217,13
+XGBoost,indian_96,Utilities & Services,0.875,0.7,0.7778,10
+XGBoost,noisy_v2,Charity & Donations,0.7163,0.3675,0.4858,2068
+XGBoost,noisy_v2,Entertainment & Recreation,0.6261,0.3819,0.4744,1969
+XGBoost,noisy_v2,Financial Services,0.427,0.4722,0.4484,2012
+XGBoost,noisy_v2,Food & Dining,0.4146,0.5631,0.4776,1996
+XGBoost,noisy_v2,Government & Legal,0.3831,0.4266,0.4037,2009
+XGBoost,noisy_v2,Healthcare & Medical,0.544,0.3458,0.4229,2001
+XGBoost,noisy_v2,Income,0.8763,0.4503,0.5949,1983
+XGBoost,noisy_v2,Shopping & Retail,0.3872,0.3673,0.377,2009
+XGBoost,noisy_v2,Transportation,0.2645,0.6548,0.3768,1996
+XGBoost,noisy_v2,Utilities & Services,0.6637,0.4872,0.5619,1997
+XGBoost,typo,Charity & Donations,0.658,0.5127,0.5763,394
+XGBoost,typo,Entertainment & Recreation,0.6221,0.457,0.5269,407
+XGBoost,typo,Financial Services,0.6806,0.5672,0.6188,372
+XGBoost,typo,Food & Dining,0.5422,0.6459,0.5895,418
+XGBoost,typo,Government & Legal,0.4819,0.4685,0.4751,397
+XGBoost,typo,Healthcare & Medical,0.646,0.4797,0.5505,369
+XGBoost,typo,Income,0.8452,0.6209,0.7158,422
+XGBoost,typo,Shopping & Retail,0.4305,0.4713,0.45,401
+XGBoost,typo,Transportation,0.3555,0.7316,0.4785,395
+XGBoost,typo,Utilities & Services,0.745,0.6341,0.6851,410

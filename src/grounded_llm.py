@@ -135,6 +135,9 @@ class GroundedFinancialAssistant:
 
                 self.client = genai.Client(api_key=self.api_key)
 
+                # Probe the configured model; fall back to gemini-2.5-flash on 404.
+                self.model_name = self._resolve_gemini_model(self.client, self.model_name)
+
                 logger.info(
                     f"Gemini client initialized with model "
                     f"'{self.model_name}'."
@@ -165,6 +168,68 @@ class GroundedFinancialAssistant:
                 f"{exc}. Falling back to offline mode."
             )
             self.client = None
+
+    # ------------------------------------------------------------------
+    # GEMINI MODEL PROBE  (result cached per process via class variable)
+    # ------------------------------------------------------------------
+
+    _gemini_model_cache: dict = {}  # class-level: requested_name -> resolved_name
+
+    @classmethod
+    def _resolve_gemini_model(cls, client: Any, requested: str) -> str:
+        """Probe the requested Gemini model once per process; cache the result.
+
+        Falls through to the next candidate only on a genuine HTTP 404 /
+        'model not found' error.  Any other exception (network, auth, quota)
+        is treated as transient: we keep the requested name and let individual
+        call sites handle it.
+        """
+        if requested in cls._gemini_model_cache:
+            return cls._gemini_model_cache[requested]
+
+        FALLBACKS = [
+            "gemini-2.5-flash",
+            "gemini-flash-latest",
+            "gemini-3.5-flash",
+        ]
+        candidates = [requested] + [f for f in FALLBACKS if f != requested]
+
+        for candidate in candidates:
+            try:
+                client.models.generate_content(model=candidate, contents="ping")
+                if candidate != requested:
+                    logger.warning(
+                        "Gemini model '%s' not found (404); switched to '%s'.",
+                        requested, candidate,
+                    )
+                else:
+                    logger.info("Gemini model '%s' confirmed available.", candidate)
+                cls._gemini_model_cache[requested] = candidate
+                return candidate
+            except Exception as e:
+                err = str(e).lower()
+                # Only a genuine 404 / model-not-found warrants trying the next candidate.
+                if "404" in err or "model not found" in err:
+                    logger.debug(
+                        "Gemini probe: model '%s' returned 404 — trying next.", candidate
+                    )
+                    continue
+                # Transient error (network, auth, quota): keep requested.
+                logger.warning(
+                    "Gemini model probe failed with non-404 error (%s); "
+                    "keeping '%s' and deferring to call-site handling.",
+                    type(e).__name__, requested,
+                )
+                cls._gemini_model_cache[requested] = requested
+                return requested
+
+        logger.warning(
+            "No Gemini model in %s responded; keeping '%s' as-is.",
+            candidates, requested,
+        )
+        cls._gemini_model_cache[requested] = requested
+        return requested
+
 
     # ------------------------------------------------------------------
     # INTENT ROUTING
@@ -799,13 +864,23 @@ class GroundedFinancialAssistant:
                 return text_out.strip()
 
         except Exception as exc:
-            logger.warning(
-                f"General LLM request failed: {exc}"
-            )
+            err = str(exc).lower()
+            if "404" in err or "not found" in err:
+                logger.warning(
+                    f"Gemini model '{self.model_name}' not found (404). "
+                    "Advisor temporarily unavailable."
+                )
+                return (
+                    "The AI advisor is temporarily unavailable "
+                    "(the configured model was not found). "
+                    "Your financial data and classification are fully functional — "
+                    "only the natural-language explanation is affected."
+                )
+            logger.warning(f"General LLM request failed: {exc}")
 
         return (
-            "I couldn't reach the AI service right now. "
-            "Please check the configured API key and try again."
+            "The AI advisor could not be reached right now. "
+            "Please check your API key and network connection, then try again."
         )
 
     # ------------------------------------------------------------------

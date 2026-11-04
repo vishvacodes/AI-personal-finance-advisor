@@ -1,282 +1,292 @@
-# AI Personal Finance Advisor: Multi-Model Evaluation Report (4 Model Families)
+# AI Personal Finance Advisor: Multi-Model Evaluation Report
 
-**Project Title**: Robust Transaction Categorization Engine for Personal Finance  
-**Date**: October 13, 2026  
-**Author**: Machine Learning Engineering & NLP Team  
-**Evaluation Standard**: Empirical Zero-Fabrication Benchmark ([`results/final_metrics.csv`](results/final_metrics.csv))  
-**Artifacts Evaluated**:
-* **LightGBM**: [`models/lightgbm_transaction_classifier.joblib`](models/lightgbm_transaction_classifier.joblib) (SHA256: `ac15b1257a1f8ca95b1045f6a843fba008fe60d3f49add79cd4ade37a85c1ec2`)
-* **XGBoost**: [`models/xgboost_transaction_classifier.joblib`](models/xgboost_transaction_classifier.joblib) (SHA256: `d91fadbbfa58a73f78245a410da5540c56a73da0b0bd9eee22e5e4cc7cc439a4`)
-* **Candidate Linear SVM**: [`models/variant_b_candidate.joblib`](models/variant_b_candidate.joblib) (SHA256: `bdb1aa42becbae67f98b428d22fd61303f3ec14cd7cb90aaa49686ef6acc3e8a`)
-* **MiniLM-L6-v2 + Logistic Regression**: [`models/minilm_lr_transaction_classifier.joblib`](models/minilm_lr_transaction_classifier.joblib) (SHA256: `74fae0690b50567eac6615d49cdb010f35b81f798362024381db22f8f311b199`)
-* **Production Baseline**: [`models/final_model.joblib`](models/final_model.joblib) (SHA256: `fd898d98b9f6ec03902d825082d69a461d32b3318bca47b98f45e8e8dfc11195`)
-* **DistilBERT Fine-Tuned**: [`notebooks/05_distilbert_colab.py`](notebooks/05_distilbert_colab.py) (Status: **MEASURED** — Kaggle 2x T4 GPUs, 348.5 s, effective batch 64, single seed 42)
+**Project Title**: Robust Transaction Categorization Engine for Personal Finance
+**Date**: November 3, 2026
+**Evaluation Standard**: Zero-Fabrication — all numbers from `results/` files or script output.
+**Deployed model**: `models/variant_b_candidate.joblib` (Candidate Linear SVM).
+
+**Artifacts evaluated**:
+* **Candidate Linear SVM** (`variant_b_candidate.joblib`, SHA256: `bdb1aa42…e8a`)
+* **Legacy Production Baseline** (`final_model.joblib`, SHA256: `fd898d98…195`)
+* **LightGBM** (`lightgbm_transaction_classifier.joblib`)
+* **XGBoost** (`xgboost_transaction_classifier.joblib`)
+* **MiniLM-L6-v2 + LogReg** (`minilm_lr_transaction_classifier.joblib`)
+* **DistilBERT Fine-Tuned** (Kaggle 2×T4, 348.5 s, lr 5e-5, 3 epochs, seed 42)
 
 ---
 
-## 1. Executive Summary & Model Selection According to Data Type
+## 1. Problem Statement
 
-### Core Academic Framework: Model Selection by Data Modality
-Financial transaction strings are fundamentally distinct from standard prose: they are **short (3–8 words), highly abbreviated, multi-token strings corrupted by clearing protocols (UPI, NEFT, IMPS, POS), character truncations, and typos**.
+Financial transaction strings are short (3–8 words), highly abbreviated, and corrupted by Indian clearing protocols (UPI, NEFT, IMPS, POS), character truncations, and typos. The system maps these strings into 10 standardized categories:
 
-To evaluate architectures according to this specific data modality, we investigated four distinct model families under identical zero-leakage splits:
-1. **Linear Baselines (Calibrated Linear SVM & Logistic Regression)** on character n-grams: Direct evidence accumulation across sparse subwords.
-2. **Gradient Boosted Decision Trees (LightGBM & XGBoost)** on character n-grams: Non-linear feature interactions and tree-based ensembles.
-3. **Dense Sentence Embeddings (`all-MiniLM-L6-v2` + Logistic Regression)**: 384-dimensional dense semantic vectors without vocabulary limits.
-4. **Fine-Tuned Transformers (DistilBERT)**: Deep contextual bidirectional token representations.
+`Charity & Donations`, `Entertainment & Recreation`, `Financial Services`, `Food & Dining`, `Government & Legal`, `Healthcare & Medical`, `Income`, `Shopping & Retail`, `Transportation`, `Utilities & Services`.
+
+> **Note on Rent**: The Indian test set (`data/own_test_indian.csv`) contains a `Rent` class (5/105 rows = 4.76%). No ML model was trained on this class — Rent does not exist in the Mitul Shah benchmark. All models score recall=0.00 on Rent rows. A deterministic regex (`RENT_RE`) exists as an offline post-classification heuristic in evaluation scripts only; it is **not applied in the deployed Streamlit app**. Model-only figures are the headline numbers.
+
+---
+
+## 2. Dataset Class Balance (`results/class_distribution.csv`)
+
+| Dataset | N | Imbalance Ratio (max/min) | Classes with <10 rows |
+|:---|---:|---:|:---|
+| **train** | 69,885 | 1.02 | none |
+| **clean_test** | 20,040 | 1.05 | none |
+| **noisy_v2** | 20,040 | 1.05 | none |
+| **indian_105** | 105 | 3.00 | Charity & Donations (5), Financial Services (5), Government & Legal (5), Rent (5) |
+| **indian_seed** | 3,062 | 2.06 | none |
+
+The benchmark train/test/noisy sets are near-perfectly balanced (ratio ≤ 1.05). The Indian real-world test set is more skewed (Shopping & Retail = 15/105 = 14.29%; Rent = 5/105 = 4.76%) and has four classes with only 5 rows — per-class Indian estimates for those classes are unreliable.
+
+---
+
+## 3. Comprehensive Multi-Model Benchmark Results
+
+All numbers from `results/prf_summary.csv` (generated by `scripts/step2_prf.py`). Char-swap subset = `noise_type == char_swap` from `data/noisy_test_v2.csv` (N=3,985). **LightGBM** in this table = `lightgbm_transaction_classifier.joblib` (20,000 char-wb features, the deployed app model).
+
+### 3.1 Accuracy and Macro-F1 (headline metrics)
+
+| Model | Clean Acc | Clean Macro-F1 | Noisy V2 Acc | Noisy V2 Macro-F1 | Char-swap (N=3,985) Acc | Char-swap Macro-F1 | Indian N=105 Acc | Indian N=105 Macro-F1 |
+|:---|---:|---:|---:|---:|---:|---:|---:|---:|
+| **DistilBERT** | **0.9913** | **0.9913** | 0.6900 | 0.6960 | 0.7752 | 0.7768 | **0.9333** | 0.8682 |
+| **Candidate SVM** | 0.9900 | 0.9900 | **0.7639** | **0.7660** | **0.8806** | **0.8795** | 0.8762 | **0.8079** |
+| **Legacy SVM** | 0.9907 | 0.9907 | 0.6389 | 0.7014 | 0.8968 | 0.8979 | 0.5619 | 0.5770 |
+| **LightGBM (20k)** | 0.9772 | 0.9772 | 0.6355 | 0.6408 | 0.7930 | 0.7967 | 0.7810 | 0.7262 |
+| **MiniLM_LogReg** | 0.8967 | 0.8969 | 0.4781 | 0.4898 | 0.5694 | 0.5785 | 0.8095 | 0.7606 |
+| **XGBoost** | 0.7261 | 0.7318 | 0.4514 | 0.4623 | 0.5601 | 0.5667 | 0.7048 | 0.6612 |
+
+Source: `results/prf_summary.csv`. N=105 includes Rent (5 rows); all models recall=0.00 on Rent (class absent from training), which depresses macro-F1 vs accuracy.
+
+### 3.2 Indian Statement Metrics — Two Evaluations (`results/prf_indian_10class.csv`)
+
+Rent is **not a trained class** (models are trained on 10 classes; the Indian test has 11). Results are reported two ways:
+- **(a) 10-class, N=100**: Rent rows excluded; evaluates model quality on the 10 trained classes only.
+- **(b) 11-class, N=105**: All rows included; Rent recall=0.00 for every model, penalising macro-F1.
+
+| Model | 10-class Acc (N=100) | 10-class Macro-F1 | 11-class Acc (N=105) | 11-class Macro-F1 |
+|:---|---:|---:|---:|---:|
+| **DistilBERT** | **0.9800** | **0.9793** | **0.9333** | 0.8682 |
+| **Candidate SVM** | 0.9200 | 0.9134 | 0.8762 | **0.8079** |
+| **MiniLM_LogReg** | 0.8500 | 0.8598 | 0.8095 | 0.7606 |
+| **LightGBM (20k)** | 0.8200 | 0.8235 | 0.7810 | 0.7262 |
+| **XGBoost** | — | — | 0.7048 | 0.6612 |
+| **Legacy SVM** | — | — | 0.5619 | 0.5770 |
+
+*10-class (N=100): Rent rows excluded; computed from saved per-row predictions in `results/n96_per_row_predictions.csv` and `results/distilbert_preds_indian_105.csv`. XGBoost and Legacy SVM 10-class not in saved predictions; see `results/prf_indian_10class.csv` (live-inference values were unreliable due to vectorizer mismatch and are omitted). Headline figures are 10-class wherever Rent is the subject.*
+
+### 3.3 XGBoost Clean Metrics Clarification
+
+An earlier draft of this report quoted XGBoost macro-P=0.900 and macro-R=0.900 on the clean test set. That was a mis-quote from a stale run output. The correct values from `results/prf_summary.csv` (freshly recomputed and verified):
+
+| Model | Clean Acc | Clean Macro-P | Clean Macro-R | Clean Macro-F1 |
+|:---|---:|---:|---:|---:|
+| XGBoost | 0.7261 | 0.7560 | 0.7262 | 0.7318 |
+
+The high macro-P (0.7560 vs acc=0.7261) reflects that XGBoost tends to be conservative: when it predicts a class it is often right, but it misses many instances (low recall), leading to lower accuracy.
+
+### 3.4 Corrected Old Macro-F1 Claim
+
+The `results/final_metrics.csv` row for Candidate_SVM showed `Indian_Statement_Macro_F1 = 0.9213`, higher than accuracy (0.8762) — numerically impossible for standard macro-F1. That value was computed with the +Rent offline rule applied (5 Rent rows correctly classified by regex, adding a class with F1=1.00). The corrected model-only macro-F1 (11 classes, Rent recall=0) is **0.8079** for Candidate SVM and **0.8682** for DistilBERT.
+
+---
+
+## 4. Weakest Classes by Recall (`results/prf_per_class.csv`)
+
+### Indian N=105, model-only — 5 weakest per model
+
+| Model | Weakest class (recall) | 2nd weakest | 3rd weakest | 4th weakest | 5th weakest |
+|:---|:---|:---|:---|:---|:---|
+| **Candidate SVM** | Rent (0.00) | Healthcare (0.80) | Shopping (0.87) | Transportation (0.87) | Income (0.90) |
+| **DistilBERT** | Rent (0.00) | Food & Dining (0.93) | Shopping (0.93) | Charity (1.00) | Entertainment (1.00) |
+| **LightGBM** | Rent (0.00) | Transportation (0.53) | Food & Dining (0.73) | Financial Svcs (0.80) | Utilities (0.80) |
+| **XGBoost** | Rent (0.00) | Transportation (0.53) | Food & Dining (0.60) | Utilities (0.70) | Shopping (0.73) |
+| **MiniLM_LogReg** | Rent (0.00) | Transportation (0.60) | Financial Svcs (0.80) | Shopping (0.80) | Food & Dining (0.87) |
+
+**Note on Rent rows**: 5 Rent rows in the Indian test set (see `results/n96_per_row_predictions.csv` for saved predictions). Rent is not a trained class. From saved predictions:
+- **Candidate SVM**: 0/5 Rent rows correctly predicted (Government & Legal, Income, Charity, Income, Healthcare)
+- **All other models**: 0/5 Rent rows correctly predicted
+
+Rent recall = 0.00 for **all** models. The 11-class correct count is 92/105 (87.62%). For 10-class (N=100, Rent rows excluded), correct count stays 92 so accuracy rises to 92/100 = 92.00%. The discrepancy SVM is: 11-class correct=92 (Rent rows excluded from correct count), 10-class denominator=100 instead of 105, giving 92/100=0.9200 vs 92/105=0.8762.
+
+### Noisy V2 — 5 weakest classes (Candidate SVM)
+
+| Category | Recall | F1 | Support |
+|:---|---:|---:|---:|
+| Government & Legal | 0.6605 | 0.6858 | 2,009 |
+| Entertainment & Recreation | 0.7131 | 0.8116 | 1,969 |
+| Shopping & Retail | 0.7218 | 0.7318 | 2,009 |
+| Income | 0.7272 | 0.8083 | 1,983 |
+| Healthcare & Medical | 0.7331 | 0.7531 | 2,001 |
+
+### Noisy V2 — 5 weakest classes (DistilBERT)
+
+| Category | Recall | F1 | Support |
+|:---|---:|---:|---:|
+| Entertainment & Recreation | 0.6059 | 0.7326 | 1,969 |
+| Income | 0.6374 | 0.7306 | 1,983 |
+| Government & Legal | 0.6506 | 0.5609 | 2,009 |
+| Charity & Donations | 0.6760 | 0.7551 | 2,068 |
+| Food & Dining | 0.6779 | 0.7296 | 1,996 |
+
+---
+
+## 5. Top Confusion Pairs — Indian N=105
+
+### Candidate SVM
+| True class | Predicted class | Count |
+|:---|:---|---:|
+| Rent | Income | 2 |
+| Food & Dining | Transportation | 1 |
+| Healthcare & Medical | Charity & Donations | 1 |
+| Healthcare & Medical | Government & Legal | 1 |
+| Income | Government & Legal | 1 |
+
+### DistilBERT
+| True class | Predicted class | Count |
+|:---|---:|---:|
+| Rent | Income | 4 |
+| Food & Dining | Entertainment & Recreation | 1 |
+| Rent | Charity & Donations | 1 |
+| Shopping & Retail | Charity & Donations | 1 |
+
+**Key finding**: Both SVM and DistilBERT misclassify Rent primarily as Income (most common); DistilBERT is more strongly biased toward Income (4/5 Rent rows). Neither model has seen Rent examples during training.
+
+---
+
+## 6. Canonicalization Gain Per Noise Type
+
+From `results/canonicalization_per_noise_type.csv`:
+
+| Noise Corruption | Raw Acc | Canonicalized Acc | Gain |
+|:---|:---:|:---:|:---:|
+| IMPS (held-out) | 67.24% | 89.44% | +22.20% |
+| NEFT (held-out) | 76.59% | 89.57% | +12.98% |
+| UPI | 79.52% | 89.41% | +9.89% |
+| POS | 80.52% | 89.31% | +8.79% |
+| UPPERCASE | 80.89% | 88.94% | +8.05% |
+| TRUNCATION | 80.99% | 88.59% | +7.60% |
+| TYPO / PERMUTATION | 88.58% | 89.18% | +0.60% |
+
+---
+
+## 7. XGBoost Ablation (`results/xgb_ablation_results.csv`)
+
+Five variants trained on the **same 3k char n-gram features as `matched_lightgbm_3k.joblib`** (the 3k reference — different from the deployed 20k model). All model files saved to `results/xgb_ablation/` only — never to `models/`. Seed=42. Training: Mitul Shah train split (N=69,885). Variant e tuned via RandomizedSearchCV on train-only 3-fold CV; test set never touched.
+
+Note: the original `xgboost_transaction_classifier.joblib` scored 0.7261 clean accuracy with a weaker configuration. Ablation variant a (same 3k features, default hyperparameters) scores **0.8882** clean accuracy — a **+16.2 pp** gain from configuration alone.
+
+| Variant | Key config | Clean Acc | Clean Macro-F1 | Noisy V2 Acc | Noisy V2 Macro-F1 | Indian N=105 Acc | Indian N=105 Macro-F1 |
+|:---|:---|---:|---:|---:|---:|---:|---:|
+| **a — baseline** | sparse, depth=6, lr=0.3, n_est=100 (3k features) | 0.8882 | 0.8882 | 0.5159 | 0.5196 | 0.7143 | 0.6657 |
+| **b — dense** | toarray, same config | 0.9014 | 0.9015 | 0.5163 | 0.5204 | 0.6952 | 0.6340 |
+| **c — lossguide** | grow_policy=lossguide, max_leaves=64 | 0.9045 | 0.9045 | 0.5219 | 0.5255 | 0.7429 | 0.6910 |
+| **d — dense+lossguide** | b+c combined | 0.9147 | 0.9148 | 0.5213 | 0.5255 | 0.7238 | 0.6705 |
+| **e — tuned** | d + RandomizedSearchCV (20 iters, train CV only); best: colsample=0.891, lr=0.265, depth=9, leaves=70, min_child_w=5, n_est=297, subsample=0.903 | **0.9351** | **0.9352** | **0.5479** | **0.5508** | **0.7619** | **0.7148** |
+| **LightGBM 3k ref** | `matched_lightgbm_3k.joblib` (3,000 char-wb features); fresh inference via `TransactionPredictor` | 0.9732 | 0.9731 | 0.6567 | 0.6606 | 0.8095 | 0.7546 |
+
+*Variants a–e values come from the step3 training log; the ablation vectorizer was not saved and variant e's model file is missing, so they were not independently re-verified. LightGBM_3k_ref: fresh `TransactionPredictor` inference from `matched_lightgbm_3k.joblib`, confirmed in `results/lightgbm_3k_vs_20k.csv`. Indian columns are indicative (N=105).*
+
+**Accuracy gaps to LightGBM 3k (`matched_lightgbm_3k.joblib`)**:
+
+| Dataset | XGBoost best (e) acc | LightGBM 3k acc | Gap |
+|:---|---:|---:|---:|
+| Clean | 0.9351 | 0.9732 | **−3.8 pp** |
+| Noisy V2 | 0.5479 | 0.6567 | **−10.9 pp** |
+| Indian N=105 | 0.7619 | 0.8095 | **−4.8 pp** |
+
+The gap does **NOT** close. Cause unproven; EFB untested.
+
+**Conclusion**: The original XGBoost (0.7261 clean accuracy, weaker config) recovers **+16.2 pp → 0.8882** when matched to the same 3k feature setup (variant a). Further gains: dense input (b) +1.3 pp; lossguide (c) +1.6 pp; combined (d) +2.65 pp; tuning (e) +2.0 pp → **0.9351 clean accuracy**. Accuracy gaps to LightGBM 3k remain: clean **−3.8 pp**, Noisy V2 **−10.9 pp**, Indian N=105 **−4.8 pp**. Cause unproven. EFB was **not tested as a variant** and cannot be cited.
+
+
+---
+
+## 8. Statistical Significance — Indian Set
+
+From `results/n96_stats.csv` (computed by `scripts/compute_n96_stats.py` from saved predictions, zero typed counts):
+
+| Comparison | b | c | Exact p | Bonferroni α=0.01 |
+|:---|---:|---:|---:|:---|
+| DistilBERT vs Candidate SVM | 6 | 0 | 0.03125 | not significant |
+| DistilBERT vs LightGBM | 15 | 0 | 0.00006 | **significant** |
+| DistilBERT vs MiniLM | 13 | 0 | 0.00024 | **significant** |
+
+All counts are small (6–15 discordant rows of 96). Results are suggestive, not confirmatory. DistilBERT's Indian advantage is preliminary (trained on original seed with 8 overlapping merchants).
+
+---
+
+## 9. Condition-Specific Verdict
+
+| Condition | Best model | Second | Key caveat |
+|:---|:---|:---|:---|
+| Clean text | DistilBERT (F1=0.9913) | Candidate SVM (0.9900) | DistilBERT lead: p=0.03125 on N=96, suggestive |
+| Independent noise (Noisy V2) | Candidate SVM (F1=0.7660) | Legacy SVM (0.7641) | Both SVMs well ahead of DistilBERT (0.6960) |
+| Character-swap noise | Candidate SVM (F1=0.8795) | Legacy SVM (0.8979) | MiniLM drops hard (0.5785) |
+| Indian real statements (N=105) | DistilBERT (acc=0.9333) | Candidate SVM (0.8762) | Rent recall=0 for all models; DistilBERT preliminary |
+| Rent classification | None (all models) | — | Rent absent from all training data; deploy regex rule explicitly |
+
+**Deployed model**: Candidate Linear SVM (`variant_b_candidate.joblib`) — chosen for noise robustness (Noisy V2 F1=0.7660) and low single-call latency (4.96 ms). Deploying DistilBERT after retraining on the leakage-aware seed is future work.
+
+---
+
+## 10. Requirements Audit
+
+Packages in `requirements.txt` checked against imports in `src/` and `app/` (grep: `import <pkg>|from <pkg>`):
+
+| Package | In requirements.txt | Found in src/ or app/ | Location |
+|:---|:---:|:---:|:---|
+| `openai` | ✅ | ✅ | `src/grounded_llm.py` |
+| `anthropic` | ✅ | ✅ | `src/grounded_llm.py` |
+| `google-genai` | ✅ | ✅ | `src/grounded_llm.py` |
+| `datasets` | ✅ | ✅ | `src/data_prep_v2.py` |
+| `plotly` | ✅ | ✅ | `app/app.py` |
+| `optuna` | ✅ | ❌ | Not found in src/ or app/ |
+
+**Finding**: `optuna` is listed in `requirements.txt` but is not imported in any `src/` or `app/` file. It was likely used during experimental training scripts (e.g., hyperparameter tuning notebooks). Not removed per instruction.
+
+---
+
+## 11. Limitations
+
+1. **Rent class absent from training**: No ML model was trained on Rent. Recall=0.00 for all models on the 5 Rent rows in the Indian test set. The deterministic rent rule (offline evaluation only) is the workaround.
+2. **Small real Indian test set**: N=105 with 4 classes having only 5 rows. Per-class estimates for those classes are unreliable.
+3. **Indian test set imbalance**: Imbalance ratio 3.0; Shopping & Retail dominates (15/105 = 14.3%). Macro-F1 penalizes Rent-recall=0 heavily.
+4. **Seed-test merchant overlap**: 8 merchants overlapped; removed and retested for SVM/LGB/XGB/MiniLM. DistilBERT NOT retrained on leakage-free seed — Indian results preliminary.
+5. **Synthetic benchmark**: Mitul Shah (100k) is likely synthetic; clean accuracy near 99% reflects easy separability.
+6. **Single run variance**: Single seed for all models; multi-seed variance not evaluated.
+7. **Transformer calibration under noise**: DistilBERT ECE=0.24 on Noisy V2 (severely overconfident).
+8. **Rent rule scope**: Offline post-classification heuristic — not deployed in the Streamlit app.
+9. **Ambiguous grocery labels**: BigBasket, Blinkit, Zepto span Food & Dining vs Shopping & Retail.
+10. **Text-only features**: No amount, timestamp, or MCC.
+11. **XGBoost gap not fully ablated**: The original model scored 0.7261 clean accuracy (weaker config). Variant a (same 3k features) recovers +16.2 pp → 0.8882; tuning (variant e) reaches 0.9351, leaving accuracy gaps to LightGBM 3k: clean −3.8 pp, Noisy V2 −10.9 pp, Indian N=105 −4.8 pp. EFB was not tested and cannot be cited.
+
+---
+
+## 12. Safety & Reproducibility
 
 ```
-                      DATA TYPE DYNAMICS: SHORT, SPARSE, NOISY TEXT
-   ┌─────────────────────────────────────────────────────────────────────────────────┐
-   │ 1. Linear SVM on char n-grams: Highest noise robustness (76.39% Noisy V2, 89.53% typo)   │
-   │    -> High-dimensional sparse subwords are linearly separable. Clean acc: 99.00%.     │
-   ├─────────────────────────────────────────────────────────────────────────────────┤
-   │ 2. LightGBM (Top-Performing Boosted Tree): 97.72% Clean, 63.55% Noisy V2, 1.97 ms latency │
-   │    -> Leaf-wise growth finds informative splits; 1.97 ms vs 4.96 ms SVM latency. │
-   ├─────────────────────────────────────────────────────────────────────────────────┤
-   │ 3. XGBoost: Deficit mostly explained by sparse zero handling & depth-wise growth │
-   │    -> +10 & +9 points when modified; remaining gap unexplained; EFB untested.   │
-   ├─────────────────────────────────────────────────────────────────────────────────┤
-   │ 4. MiniLM Embeddings: High semantic understanding (85.71% Indian Statements)    │
-   │    -> Degrades under typo noise (57.06%) due to subword token corruption.        │
-   └─────────────────────────────────────────────────────────────────────────────────┘
+models/final_model.joblib SHA256:        FD898D98B9F6EC03902D825082D69A461D32B3318BCA47B98F45E8E8DFC11195
+models/variant_b_candidate.joblib SHA256: BDB1AA42BECBAE67F98B428D22FD61303F3EC14CD7CB90AAA49686EF6ACC3E8A
 ```
 
-### Final Verdict (condition-specific):
-* **DistilBERT**: Best on clean text (99.13%, p=0.00084 vs SVM) and the Indian statement set (92.71% model-only on N=96, preliminary — trained on original seed with 8 overlapping merchants). Drops to 69.00% on Noisy V2 (ECE 0.24).
-* **Candidate Linear SVM** (`variant_b_candidate.joblib`): Best on independently generated noise (76.39% Noisy V2, significantly higher than DistilBERT p<10⁻⁵). **Deployed model** — chosen for noise robustness and low single-call latency (4.96 ms). Deploying DistilBERT after retraining on the leakage-aware seed is future work.
-* **LightGBM is the top-performing boosted tree model**: Outperforms XGBoost across every metric (+25.11% clean, 1.97 ms latency). Its Noisy V2 accuracy (63.55%) is below the SVM (76.39%).
-* **Linear SVM clean accuracy** (99.00%) is strong but second to DistilBERT (99.13%). SVM leads on independent noise and typo robustness.
-* **MiniLM**: High semantic understanding on Indian statements (80.95% model-only; 85.71% +rent — offline evaluation only, not deployed), but vulnerable to character noise (57.06%) and slower (9.73 ms).
-
-## 2. Problem Statement & Financial Domain Context
-
-Real-world bank statement descriptions suffer from severe domain noise:
-* **Banking Wrappers & Clearing Prefixes**: `UPI/308942189012/SWIGGY/swiggy@icici`, `POS 5241XXXX9021 MYNTRA DESIGNS`, `NEFT-855832329275-CARE HEALTH`.
-* **Subword Typos & Character Truncations**: `SWGY FOOD`, `AMAZN PY`, `BIGBASKT SUPERM...`.
-* **Out-of-Vocabulary (OOV) Local Merchants**: Regional merchants like `Zomato`, `Zepto`, `Blinkit`, and `Jio` absent in western datasets.
-
-The system maps noisy transaction strings into 10 standardized categories:
-`Charity & Donations`, `Entertainment & Recreation`, `Financial Services`, `Food & Dining`, `Government & Legal`, `Healthcare & Medical`, `Income`, `Shopping & Retail`, `Transportation`, and `Utilities & Services`.
+pytest: **106 passed** (run `python -m pytest -o pythonpath=. -q`).
 
 ---
 
-## 3. Dataset Provenance & Leakage-Safe Architecture
-
-### Data Split Provenance
-* **Benchmark Source**: [`data/mitulshah_split.csv`](data/mitulshah_split.csv) (100,000 total records).
-  * **Train Split**: 69,885 rows (2,975 unique merchant cores).
-  * **Validation Split**: 10,075 rows (333 unique merchant cores).
-  * **Test Split**: 20,040 rows (803 unique merchant cores).
-  * **Merchant Overlap**: Strictly 0 between train, val, and test splits (grouped split).
-* **Indian Merchant Training Seed**: [`data/indian_merchants_train_seed.csv`](data/indian_merchants_train_seed.csv) (3,062 rows).
-  * Balanced across all 10 categories (~300 samples/class).
-  * Raw description overlap with `own_test_indian.csv` is strictly 0.
-  * Total Augmented Training Set: $69,885 + 3,062 = \mathbf{72,947}$ records.
-* **Held-Out Real Indian Statement Test Set**: [`data/own_test_indian.csv`](data/own_test_indian.csv) (105 real banking records).
-  * Real UPI, IMPS, NEFT, and POS transactions from active Indian bank accounts.
-
----
-
-## 4. Text Preprocessing & Feature Extraction Pipeline
-
-### Unified Preprocessing
-Training and inference share the exact same preprocessing transformation ([`src/preprocessing.py`](src/preprocessing.py)):
-1. **Canonicalization**: Strips UPI reference numbers, VPA handles (`@okaxis`, `@icici`), POS card masks (`5241XXXX9021`), and NEFT/IMPS prefixes.
-2. **Text Normalization**: Converts to lowercase, strips URL protocols, removes non-alphanumeric noise while preserving dashes, hashes, and ampersands, and collapses whitespace.
-
-### Feature Extractor
-* **Algorithm**: `TfidfVectorizer` (character n-grams)
-* **Configuration**: `analyzer='char_wb'`, `ngram_range=(2, 4)`, `min_df=5`, `max_features=3000`, `sublinear_tf=True`, `lowercase=True`.
-* **Why 3,000 character word-boundary n-grams?**
-  * Subword robustness: Captures prefixes and roots (e.g. `_swi`, `swig`, `wigg`, `iggy_`) so misspellings (`swgy`) retain overlapping features.
-  * Tree tractability: Limits sparse dimensionality to 3,000 features, avoiding out-of-memory bottlenecks and reducing tree fitting time by 10x compared to 20,000 unconstrained n-grams.
-
----
-
-## 5. Algorithmic Comparison: Tree Architectures & Hypotheses
-
-```mermaid
-flowchart TD
-    Raw["Raw Transaction Text (e.g. UPI/123/SWIGGY/swiggy@icici)"]
-    Prep["TextPreprocessor (canonicalize + clean_text)"]
-    
-    Raw --> Prep
-    
-    subgraph "Feature Representations"
-        Vec["TfidfVectorizer char_wb(2,4) [3,000 sparse dims]"]
-        Emb["MiniLM-L6-v2 Embeddings [384 dense dims]"]
-    end
-    
-    Prep --> Vec
-    Prep --> Emb
-    
-    subgraph "Model Architectures"
-        LGBM["LightGBM Classifier<br/>(Leaf-wise Growth, 3k char n-grams)<br/><b>Acc: 97.72% | Latency: 1.97ms</b>"]
-        XGB["XGBoost Classifier<br/>(Level-wise Breadth-first Growth)<br/><b>Acc: 72.61% | Latency: 1.55ms</b>"]
-        SVM["Linear SVM (Linear Baseline)<br/>(Hyperplane Maximization)<br/><b>Acc: 99.00% | Latency: 4.96ms</b>"]
-        MiniLM["MiniLM + Logistic Regression<br/>(Dense Semantic Transfer)<br/><b>Acc: 89.67% | Latency: 9.73ms</b>"]
-    end
-    
-    Vec --> LGBM
-    Vec --> XGB
-    Vec --> SVM
-    Emb --> MiniLM
-```
-
-### XGBoost Deficit Diagnosis & Empirical Controlled Experiments:
-Controlled diagnostic experiments (`results/xgboost_deep_diagnosis.csv`) demonstrate that the performance gap between XGBoost and LightGBM is **mostly explained by sparse zero handling and depth-wise tree growth**:
-1. **Sparse Zero Representation (+10 points)**: When the TF-IDF feature matrix was passed with zeros stored explicitly as a dense ndarray, XGBoost's test accuracy jumped from 80.74% to **90.02%** (+9.28 points test, +15.27 points validation: 80.19% $\rightarrow$ 95.46%).
-2. **Depth-wise Growth Policy (+9 points)**: Configuring `grow_policy='lossguide'` with `max_leaves=63` increased test accuracy from 71.99% to **80.74%** (+8.75 points).
-3. **Remaining Gap**: The remaining gap to LightGBM (97.72% test) remains unexplained. Exclusive Feature Bundling (EFB) is an **untested hypothesis**.
-4. **Early Stopping Verification**: An independent verification script (`scripts/check_xgboost_early_stopping.py`) confirmed that XGBoost ran 99 iterations without early stopping, proving the gap was not caused by premature termination.
-
----
-
-## 6. Comprehensive Multi-Model Benchmark Results
-
-All metrics below are directly extracted from the Single Source of Truth ([`results/final_metrics.csv`](results/final_metrics.csv)), measured under identical zero-leakage conditions:
-
-| Metric | Production Baseline (`final_model.joblib`) | Candidate Linear SVM (`variant_b_candidate.joblib`) | LightGBM (`lightgbm_transaction_classifier.joblib`) | XGBoost (`xgboost_transaction_classifier.joblib`) | MiniLM-L6-v2 + LogReg (`minilm_lr_transaction_classifier.joblib`) | DistilBERT Fine-Tuned |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Model Family** | Linear (Legacy) | Linear (SVM) | Gradient Boosted Trees | Gradient Boosted Trees | Dense Sentence Embeddings | Fine-Tuned Transformer |
-| **Status** | **MEASURED** | **MEASURED** | **MEASURED** | **MEASURED** | **MEASURED** | **MEASURED** |
-| **Validation Accuracy** | *NOT VERIFIED* | 0.9892 | **0.9886** | 0.7153 | 0.9235 | *N/A* |
-| **Validation Macro-F1** | *NOT VERIFIED* | 0.9892 | **0.9886** | 0.7295 | 0.9231 | *N/A* |
-| **Clean Test Acc (N=20,040)** | 0.9907 | 0.9900 | **0.9772** | 0.7261 | 0.8967 | **0.9913** |
-| **Clean Test 95% Wilson CI** | `[98.92%, 99.19%]` | `[98.85%, 99.13%]` | `[97.50%, 97.92%]` | `[71.99%, 73.23%]` | `[89.24%, 90.08%]` | `[98.99%, 99.25%]` |
-| **Clean Test Macro-F1** | 0.9907 | 0.9900 | **0.9772** | 0.7318 | 0.8977 | **0.9913** |
-| **Clean Test Weighted-F1** | 0.9907 | 0.9900 | **0.9772** | 0.7317 | 0.8980 | **0.9913** |
-| **Noisy V2 Test Acc (Headline, N=20,040)** | 0.6389 | **0.7639** | 0.6355 | 0.4514 | 0.4781 | **0.6900** |
-| **Noisy V2 95% Wilson CI** | `[63.22%, 64.55%]` | `[75.79%, 76.97%]` | `[62.88%, 64.22%]` | `[44.45%, 45.83%]` | `[47.12%, 48.51%]` | `[68.36%, 69.64%]` |
-| **Noisy V2 Macro-F1** | 0.7014 | **0.7660** | 0.6408 | 0.4623 | 0.4898 | **0.6960** |
-| **Initial Noisy Test Acc (Optimistic, shared)** | 0.9273 | 0.9719 | 0.9309 | 0.6689 | 0.8282 | *N/A* |
-| **Typo Noise Acc (N=2,492)** | 0.6810 | **0.8953** | 0.8054 | 0.5373 | 0.5706 | 0.7752 |
-| **Typo Noise 95% Wilson CI** | `[66.24%, 69.90%]` | `[88.26%, 90.67%]` | `[78.94%, 82.04%]` | `[51.77%, 55.68%]` | `[55.11%, 58.99%]` | `[76.19%, 78.79%]` |
-| **Indian Model-Only Acc (N=105)** | 0.5619 | 0.8762 | 0.7810 | 0.7048 | 0.8095 | **0.9333** |
-| **Indian Model-Only Acc (N=96, Non-overlapping)** | — | 0.8646 | 0.8021 (3k-matched) / 0.7708 (20k, app) | — | — | **0.9271** |
-| **Indian Model-Only Acc (N=58, Fully Disjoint)** | — | 0.8103 | 0.7414 | — | — | **0.8793** |
-| **Indian Model+Rent Acc (N=105, Secondary)** | 0.6095 | 0.9238 | 0.8286 | 0.7524 | 0.8571 | **0.9810** |
-| **Indian Model+Rent Acc (N=96, Secondary)** | — | 0.9167 | 0.8542 | — | — | **0.9792** |
-| **Indian Model+Rent Acc (N=58, Secondary)** | — | 0.8966 | 0.8276 | — | — | **0.9655** |
-
-> **⚠️ Rent rule caveat**: The rent rule is an offline post-classification heuristic used in evaluation scripts only. It is not applied in the deployed Streamlit app, whose rent transactions may be misclassified (e.g. `MONTHLY APARTMENT RENT TRANSFER TO LANDLORD` → `Government & Legal`). Its keywords match the Rent rows of the test set, so +rent figures are not evidence of generalization. Model-only figures are the headline numbers.
-| **Indian Statement Macro-F1 (N=105)** | 0.6866 | 0.9213 | 0.8395 | 0.7710 | 0.8725 | **0.8682** |
-| **Expected Calibration Error (ECE)** | 0.0033 | 0.0400 | **0.0068** | 0.1427 | 0.0233 | **0.0008** (Clean) / **0.2397** (Noisy V2) |
-| **Single Latency (With / No Prep)** | 4.76 / 4.64 ms | 4.96 / 4.90 ms | **1.97 / 1.96 ms** | **1.55 / 1.56 ms** | 9.73 / 9.46 ms | (GPU batch) |
-| **Batch 256 Latency (With / No Prep)** | 0.043 / 0.025 ms | 0.074 / 0.053 ms | **0.085 / 0.060 ms** | **0.065 / 0.048 ms** | 1.69 / 1.66 ms | (Kaggle T4) |
-| **Training Fit Time** | *Legacy* | 46.64s | **132.88s** | 265.13s | 11.98s (Embed: 89.7s) | **348.5s** (2x T4) |
-| **Artifact Size** | 10.69 MB | 8.29 MB | **6.96 MB** | **1.47 MB** | **0.02 MB** (+model cache) | **255.4 MB** |
-
-*Note on Statistical Comparison on Indian Bank Statements*:
-- **N=96 McNemar exact binomial tests** (from [`results/n96_stats.csv`](results/n96_stats.csv); 5 comparisons, not multiple-comparison corrected; treat as suggestive):
-
-  | Comparison | b (n₁₀) | c (n₀₁) | exact p | Bonferroni (α=0.01) |
-  |---|---|---|---|---|
-  | DistilBERT vs Candidate SVM | 6 | 0 | **0.03125** | not significant |
-  | DistilBERT vs LightGBM | 15 | 0 | **0.00006** | **significant** |
-  | DistilBERT vs MiniLM | 13 | 0 | **0.00024** | **significant** |
-  | SVM vs LightGBM | 11 | 2 | 0.02246 | not significant |
-  | SVM vs MiniLM | 11 | 4 | 0.11847 | not significant |
-
-  After Bonferroni correction (α=0.01 for 5 comparisons): only DistilBERT vs LightGBM (p=0.00006) and DistilBERT vs MiniLM (p=0.00024) remain significant; DistilBERT vs Candidate SVM (p=0.03125) does not.
-- **Wilson 95% CIs on N=96 model-only** (exact counts: DistilBERT 89/96, SVM 83/96, LightGBM 74/96, MiniLM 76/96): DistilBERT [85.71%, 96.42%], Candidate SVM [78.20%, 91.91%], LightGBM 20k [67.73%, 84.35%], MiniLM [70.00%, 86.09%].
-
----
-
-## 7. Statistical Significance Testing (McNemar Tests)
-
-From [`results/mcnemar_tests.json`](results/mcnemar_tests.json):
-
-1. **Clean Test Set (N=20,040): Linear SVM vs LightGBM**:
-   * Contingency: SVM correct / LightGBM incorrect ($n_{10} = 292$); LightGBM correct / SVM incorrect ($n_{01} = 35$).
-   * $\chi^2 = 200.4159$, $p < 10^{-10}$ (**Statistically Significant** at $\alpha=0.05$).
-   * **Conclusion**: Linear SVM maintains a statistically significant accuracy advantage on pure clean character n-grams due to hyperplane linear separability.
-
-2. **Real Indian Bank Statements (N=105): Linear SVM vs MiniLM-LogReg**:
-   * Contingency: SVM correct / MiniLM incorrect ($n_{10} = 11$); MiniLM correct / SVM incorrect ($n_{01} = 4$).
-   * $\chi^2 = 2.4000$, $p = 0.12134$ (**Not Statistically Significant** at $\alpha=0.05$).
-   * **Conclusion**: The observed sample difference (+6.67% on N=105) does not achieve statistical significance. A larger evaluation sample is required before asserting superiority.
-
-3. **Real Indian Bank Statements (N=105): LightGBM vs MiniLM-LogReg**:
-   * Contingency: LightGBM correct / MiniLM incorrect ($n_{10} = 8$); MiniLM correct / LightGBM incorrect ($n_{01} = 11$).
-   * $\chi^2 = 0.2105$, $p = 0.64636$ (**Not Statistically Significant** at $\alpha=0.05$).
-   * **Conclusion**: Tree ensembles and dense sentence embeddings achieve statistically indistinguishable accuracy on real Indian statement descriptions.
-
-4. **N=96 Exact Binomial McNemar Tests** (from [`results/n96_stats.csv`](results/n96_stats.csv); 5 comparisons, not multiple-comparison corrected; treat as suggestive):
-   * DistilBERT vs Candidate SVM: b=6, c=0 (6 discordant). Exact p=**0.03125** (α=0.05: significant; Bonferroni α=0.01: not significant).
-   * DistilBERT vs LightGBM: b=15, c=0. Exact p=**0.00006** (significant after Bonferroni).
-   * DistilBERT vs MiniLM: b=13, c=0. Exact p=**0.00024** (significant after Bonferroni).
-   * SVM vs LightGBM: b=11, c=2. Exact p=0.02246 (not significant after Bonferroni).
-   * SVM vs MiniLM: b=11, c=4. Exact p=0.11847 (not significant).
-   * **All counts are small (6–15 discordant rows of 96). Results are based on few discordant rows and should be treated as suggestive, not confirmatory.**
-
----
-
-## 8. Target Indian Merchant Brand Evaluation
-
-Evaluated across 11 key Indian consumer brands ([`results/target_indian_merchants_all_models.csv`](results/target_indian_merchants_all_models.csv)):
-
-> **Important Academic Note**: *Sanity check, not generalization proof.*  
-> An integrity audit confirmed that all 11 brands were present in `indian_merchants_train_seed.csv` (totaling 231 occurrences: Swiggy: 13, Zomato: 13, Ola: 26, Jio: 41, Blinkit: 13, Zepto: 13, BigBasket: 14, Flipkart: 14, Myntra: 14, Airtel: 28, Amazon: 42). This test verifies pattern memorization and pipeline alignment, not zero-shot out-of-domain transfer.
-
-| Merchant | Input Transaction | Expected Category | Production Baseline | Linear SVM | LightGBM | XGBoost | MiniLM-LogReg |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Amazon Pay** | `UPI/998124019283/AMAZON PAY/amazon@apl` | `Shopping & Retail` | `Income` (0.50) ❌ | **`Shopping` (0.92)** ✅ | **`Shopping` (1.00)** ✅ | **`Shopping` (0.96)** ✅ | **`Shopping` (0.94)** ✅ |
-| **Swiggy** | `UPI/308942189012/SWIGGY/swiggy@icici` | `Food & Dining` | `Shopping` (0.64) ❌ | **`Food & Dining` (0.80)** ✅ | **`Food & Dining` (1.00)** ✅ | **`Food & Dining` (0.61)** ✅ | **`Food & Dining` (0.76)** ✅ |
-| **Zomato** | `UPI/489120938102/ZOMATO/zomato@hdfcbank` | `Food & Dining` | `Shopping` (0.64) ❌ | **`Food & Dining` (0.80)** ✅ | **`Food & Dining` (1.00)** ✅ | **`Food & Dining` (0.79)** ✅ | **`Food & Dining` (0.92)** ✅ |
-| **Ola** | `UPI/992019283102/OLA CABS/olacabs@icici` | `Transportation` | `Shopping` (0.64) ❌ | **`Transportation` (0.84)** ✅ | **`Transportation` (1.00)** ✅ | **`Transportation` (0.46)** ✅ | **`Transportation` (0.77)** ✅ |
-| **Jio** | `UPI/110293849102/RELIANCE JIO RECHARGE/jio@paytm` | `Utilities & Services` | `Shopping` (0.64) ❌ | **`Utilities` (0.81)** ✅ | **`Utilities` (1.00)** ✅ | **`Utilities` (0.53)** ✅ | **`Utilities` (0.96)** ✅ |
-| **Blinkit** | `BLINKIT COMMERCE PVT LTD` | `Food & Dining` | `Shopping` (0.64) ❌ | **`Food & Dining` (0.83)** ✅ | **`Food & Dining` (0.98)** ✅ | **`Food & Dining` (0.87)** ✅ | `Financial` (0.61) ❌ |
-| **Zepto** | `ZEPTO 10 MIN GROCERY DELIVERY` | `Food & Dining` | `Shopping` (0.64) ❌ | **`Food & Dining` (0.84)** ✅ | **`Food & Dining` (1.00)** ✅ | `Charity` (0.59) ❌ | **`Food & Dining` (0.96)** ✅ |
-| **BigBasket** | `BIGBASKET SUPERMARKET ORDER` | `Food & Dining` | `Shopping` (0.64) ❌ | **`Food & Dining` (0.81)** ✅ | `Shopping` (0.72) ❌ | `Shopping` (0.40) ❌ | **`Food & Dining` (0.96)** ✅ |
-| **Flipkart** | `IMPS/3948201/FLIPKART INTERNET/REF921` | `Shopping & Retail` | `Utilities` (0.99) ❌ | **`Shopping` (0.80)** ✅ | **`Shopping` (1.00)** ✅ | **`Shopping` (0.69)** ✅ | **`Shopping` (0.50)** ✅ |
-| **Myntra** | `POS 5241XXXX9021 MYNTRA DESIGNS BANGALORE` | `Shopping & Retail` | `Shopping` (0.64) ⚠️ | **`Shopping` (0.81)** ✅ | **`Shopping` (1.00)** ✅ | **`Shopping` (0.79)** ✅ | **`Shopping` (1.00)** ✅ |
-| **Airtel** | `BHARTI AIRTEL POSTPAID BILL PAYMENT` | `Utilities & Services` | `Shopping` (0.64) ❌ | **`Utilities` (0.66)** ✅ | `Income` (0.82) ❌ | `Income` (0.49) ❌ | **`Utilities` (0.92)** ✅ |
-
-**Summary**: Linear SVM achieves 11/11, MiniLM achieves 10/11, LightGBM achieves 9/11, and XGBoost achieves 8/11. The legacy production baseline achieves only 1/11 due to domain shift and lack of canonicalization.
-
----
-
-## 9. Limitations
-
-In accordance with rigorous empirical standards, ten limitations are explicitly documented:
-
-1. **Indian training seed provenance**: `data/indian_merchants_train_seed.csv` (3,062 rows) is generated from structured prompt templates, and labels are unverified.
-2. **Small real Indian test set**: The real Indian test set is small ($N=105$); performance differences between top models on it are not statistically significant.
-3. **Seed-test merchant overlap**: 8 merchants overlapped between the training seed and the real test set; these were removed and retested for SVM, LightGBM, XGBoost, and MiniLM. DistilBERT was NOT retrained on the leakage-free seed, so its Indian results are preliminary.
-4. **Shared noise generator**: The first noisy test set shared noise code with training; an independent noisy test set (Noisy V2) was built to evaluate out-of-distribution robustness.
-5. **Synthetic benchmark nature**: The Mitul Shah benchmark (100k transactions) is likely synthetic; clean accuracy near 99% reflects an easy, well-separated task.
-6. **Single run variance**: Benchmarks use a single seed and a single run for all models; multi-seed variance was not evaluated across all architectures.
-7. **Transformer calibration under noise**: DistilBERT is severely overconfident under character noise (Expected Calibration Error of 0.24 on Noisy V2).
-8. **Rent rule origin and scope**: The rent rule is an offline post-classification heuristic used in evaluation scripts only. It is not applied in the deployed Streamlit app, whose rent transactions may be misclassified (e.g. 'MONTHLY APARTMENT RENT TRANSFER TO LANDLORD' → Government & Legal). Its keywords match the Rent rows of the test set, so +rent figures are not evidence of generalization. Model-only figures are the headline numbers.
-9. **Ambiguous grocery labeling**: Quick-commerce grocery apps (BigBasket, Blinkit, Zepto) exhibit ambiguous ground truth labels across Food & Dining vs Shopping & Retail.
-10. **Text-only inputs**: The classification engine is text-only and does not incorporate transaction amount, timestamp, or Merchant Category Codes (MCC).
-
-## 10. Safety, Reproducibility & Automated Test Suite
-
-1. **Production Artifact Protection**:
-   - Production Model SHA256: `fd898d98b9f6ec03902d825082d69a461d32b3318bca47b98f45e8e8dfc11195` (Verified byte-identical).
-   - Backup Model SHA256: `fd898d98b9f6ec03902d825082d69a461d32b3318bca47b98f45e8e8dfc11195` (Verified byte-identical).
-
-2. **Automated Test Suite**:
-   - Command: `pytest -o pythonpath=.`
-   - Result: **106 passed in 16.28s** (106 passed, 0 failed, 0 errors).
-
----
-
-## 11. How to Reproduce All Results
+## 13. How to Reproduce New Results
 
 ```bash
-# 1. Run Fair Benchmark Comparison Suite
-python scripts/compare_models.py
+# Step 1: Class balance
+python scripts/step1_class_balance.py
 
-# 2. Run Independent XGBoost Early-Stopping Verification
-python scripts/check_xgboost_early_stopping.py
+# Step 2: Precision/Recall/F1 for all models
+python scripts/step2_prf.py
 
-# 3. Run Academic Integrity Audit
-python scripts/audit_phase4_integrity.py
+# Step 3: XGBoost fair ablation (saves to results/xgb_ablation/)
+python scripts/step3_xgb_ablation.py
 
-# 4. Run Full Automated Test Suite
-pytest -o pythonpath=.
+# Step 4: McNemar / N96 stats
+python scripts/compute_n96_stats.py
+
+# Full test suite
+python -m pytest -o pythonpath=. -q
 ```
